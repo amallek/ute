@@ -129,6 +129,8 @@ int ParseSchema(const char *filename, struct ute_schema *out_schema)
 #ifdef UTE_DEBUG
                     fprintf(stderr, "DEBUG: ParseSchemaField failed for field %zu in version %d\n", j, version);
 #endif
+                    for (size_t k = 0; k < j; ++k)
+                        free_field(&fields[k]);
                     yaml_document_delete(&doc);
                     yaml_parser_delete(&parser);
                     fclose(f);
@@ -168,6 +170,8 @@ int ParseSchema(const char *filename, struct ute_schema *out_schema)
 #ifdef UTE_DEBUG
                 fprintf(stderr, "DEBUG: ParseSchemaField failed for field %zu (single-version)\n", j);
 #endif
+                for (size_t k = 0; k < j; ++k)
+                    free_field(&fields[k]);
                 yaml_document_delete(&doc);
                 yaml_parser_delete(&parser);
                 fclose(f);
