@@ -8,7 +8,9 @@ build:
 	go build -o $(BINARY) $(SRC)
 
 crosslang_test:
-	go build -o crosslang_test test/crosslang_test.go
+	go build -o crosslang_test test/test.go
+
+clean:
 	rm -f $(BINARY) crosslang_test
 
 .PHONY: all build clean

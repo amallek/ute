@@ -1,12 +1,8 @@
-
 CC = cc
 CFLAGS = -Wall -Wextra -O2
 
 # Platform-specific flags for libyaml
 UNAME_S := $(shell uname -s)
-
-# Print UNAME_S
-$(info UNAME_S=$(UNAME_S))
 
 ifeq ($(UNAME_S),Darwin)
 CFLAGS += -I/opt/homebrew/include
@@ -16,18 +12,16 @@ CFLAGS += $(shell pkg-config --cflags yaml-0.1)
 LDFLAGS += $(shell pkg-config --libs yaml-0.1)
 endif
 
-SRC = ute.c codex.c schema.c
+SRC = ../codex.c ../schema.c crosslang_test.c
 OBJ = $(SRC:.c=.o)
-BIN = ute
+BIN = crosslang_test
 
-
-
-all: $(BIN) 
-
-debug: CFLAGS += -DUTE_DEBUG
-debug: $(BIN)
+all: $(BIN)
 
 $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ)
+
+clean:
+	rm -f $(BIN) *.o
 
 .PHONY: all clean
