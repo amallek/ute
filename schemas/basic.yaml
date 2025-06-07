@@ -1,0 +1,39 @@
+versions:
+  - version: 1
+    fields:
+      - name: id         # Unique identifier for the object (integer)
+        type: int
+      - name: name       # Name of the object (string)
+        type: string
+      - name: active     # Status flag indicating if the object is active (boolean)
+        type: bool
+
+# You can freely extend the schema by adding new fields:
+#  - name: created_at   # Timestamp when the object was created (string)
+#    type: string
+
+# To nest objects, use type: struct and add a fields section:
+#  - name: profile
+#    type: struct
+#    fields:
+#      - name: email
+#        type: string
+#      - name: age
+#        type: int
+
+# To define a list, use type: list and specify the element type:
+#  - name: tags
+#    type: list
+#    elem:
+#      type: string
+
+# Lists of structs are also possible:
+#  - name: devices
+#    type: list
+#    elem:
+#      type: struct
+#      fields:
+#        - name: id
+#          type: int
+#        - name: name
+#          type: string

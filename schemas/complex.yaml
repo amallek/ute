@@ -1,0 +1,26 @@
+versions:
+  - version: 1
+    fields:
+      - name: devices
+        type: list
+        elem:
+          type: struct
+          fields:
+            - name: id
+              type: int
+            - name: name
+              type: string
+  # Example for a future version (add new fields as needed):
+  # - version: 2
+  #   fields:
+  #     - name: devices
+  #       type: list
+  #       elem:
+  #         type: struct
+  #         fields:
+  #           - name: id
+  #             type: int
+  #           - name: name
+  #             type: string
+  #           - name: status
+  #             type: string

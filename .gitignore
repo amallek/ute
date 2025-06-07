@@ -1,0 +1,6 @@
+.DS_Store
+**/crosslang_test
+**/ute
+**/*.ute
+**/*.o
+bindings/golang/test
