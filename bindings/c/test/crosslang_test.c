@@ -63,7 +63,7 @@ int main(int argc, char **argv)
         FILE *fin = fopen(filename, "rb");
         if (!fin)
         {
-            fprintf(stderr, "[crosslang] %s not found. Please run Go test first.\n", filename);
+            fprintf(stderr, "[crosslang] %s not found.\n", filename);
         }
         else
         {
