@@ -217,9 +217,11 @@ static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, s
             return 0;
         uint64_t nfields = 0;
         read += ute_decode_varint(in + read, in_size - read, &nfields);
+        if (nfields != field->num_fields)
+            return 0;
         for (size_t i = 0; i < nfields; ++i)
         {
-            read += ute_read_field(&field->fields[i], in + read, in_size - read, (char *)value + i * sizeof(void *));
+            read += ute_read_field(&field->fields[i], in + read, in_size - read, (char *)value + field->fields[i].offset);
         }
         break;
     }
