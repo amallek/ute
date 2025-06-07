@@ -46,7 +46,7 @@ Thank you for considering contributing to the Ultra Tiny Encoding (UTE) project!
 
 ## License
 
-By contributing, you agree that your contributions will be licensed under the [MIT License](./LICENSE).
+By contributing, you agree that your contributions will be licensed under the [GPL3](./LICENSE).
 
 ## Protocol Reference
 
