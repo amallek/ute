@@ -20,8 +20,6 @@ SRC = ute.c codex.c schema.c
 OBJ = $(SRC:.c=.o)
 BIN = ute
 
-
-
 all: $(BIN) 
 
 debug: CFLAGS += -DUTE_DEBUG

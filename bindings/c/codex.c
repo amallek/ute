@@ -1,3 +1,4 @@
+
 #include "codex.h"
 #include "schema.h"
 #include <string.h>
@@ -8,18 +9,24 @@
 #define ERR UTE_BUF_ERROR
 
 // Macro to ensure there is enough space remaining in an output buffer
-#define ENSURE_SPACE(wanted)                 \
-    do {                                    \
-        if (out_size - written < (wanted))   \
-            return ERR;                      \
+#define ENSURE_SPACE(wanted)               \
+    do                                     \
+    {                                      \
+        if (out_size - written < (wanted)) \
+            return ERR;                    \
     } while (0)
 
 // Macro to ensure there is enough data left in an input buffer
-#define ENSURE_RSPACE(wanted)                \
-    do {                                    \
-        if (in_size - read < (wanted))       \
-            return ERR;                      \
+#define ENSURE_RSPACE(wanted)          \
+    do                                 \
+    {                                  \
+        if (in_size - read < (wanted)) \
+            return ERR;                \
     } while (0)
+
+// =====================
+// Internal helpers
+// =====================
 
 // Helper: encode varint (returns bytes written)
 static size_t ute_encode_varint(uint64_t n, uint8_t *out)
@@ -52,9 +59,30 @@ static size_t ute_decode_varint(const uint8_t *in, size_t in_size, uint64_t *out
     return i;
 }
 
-// Serialize a C struct (as a map) to UTE binary format
+// =====================
+// Serialization
+// =====================
 
 // Helper: write a field value to buffer (recursive for struct/list)
+static size_t ute_write_field(const struct ute_field *field, const void *value, uint8_t *out, size_t out_size);
+
+size_t ute_serialize(const void *data, const void *schema, uint8_t *out_buf, size_t out_buf_size)
+{
+    // data: pointer to array of pointers (one per top-level field)
+    // schema: pointer to ute_field array (top-level fields)
+    const struct ute_field *fields = (const struct ute_field *)schema;
+    size_t num_fields = 1; // for demo, only one top-level field ("devices")
+    size_t written = 0;
+    for (size_t i = 0; i < num_fields; ++i)
+    {
+        size_t sub = ute_write_field(&fields[i], ((const void *const *)data)[i], out_buf + written, out_buf_size - written);
+        if (sub == ERR)
+            return ERR;
+        written += sub;
+    }
+    return written;
+}
+
 static size_t ute_write_field(const struct ute_field *field, const void *value, uint8_t *out, size_t out_size)
 {
     size_t written = 0;
@@ -180,26 +208,29 @@ static size_t ute_write_field(const struct ute_field *field, const void *value, 
     return written;
 }
 
-size_t ute_serialize(const void *data, const void *schema, uint8_t *out_buf, size_t out_buf_size)
+// =====================
+// Deserialization
+// =====================
+
+// Helper: read a field value from buffer (recursive for struct/list)
+static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, size_t in_size, void *value);
+
+size_t ute_deserialize(const uint8_t *in_buf, size_t in_buf_size, const void *schema, void *out_data)
 {
-    // data: pointer to array of pointers (one per top-level field)
     // schema: pointer to ute_field array (top-level fields)
     const struct ute_field *fields = (const struct ute_field *)schema;
     size_t num_fields = 1; // for demo, only one top-level field ("devices")
-    size_t written = 0;
+    size_t read = 0;
     for (size_t i = 0; i < num_fields; ++i)
     {
-        size_t sub = ute_write_field(&fields[i], ((const void *const *)data)[i], out_buf + written, out_buf_size - written);
+        size_t sub = ute_read_field(&fields[i], in_buf + read, in_buf_size - read, ((void **)out_data)[i]);
         if (sub == ERR)
             return ERR;
-        written += sub;
+        read += sub;
     }
-    return written;
+    return read;
 }
 
-// Deserialize UTE binary data to a C struct (as a map)
-
-// Helper: read a field value from buffer (recursive for struct/list)
 static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, size_t in_size, void *value)
 {
     size_t read = 0;
@@ -282,22 +313,6 @@ static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, s
     }
     default:
         break;
-    }
-    return read;
-}
-
-size_t ute_deserialize(const uint8_t *in_buf, size_t in_buf_size, const void *schema, void *out_data)
-{
-    // schema: pointer to ute_field array (top-level fields)
-    const struct ute_field *fields = (const struct ute_field *)schema;
-    size_t num_fields = 1; // for demo, only one top-level field ("devices")
-    size_t read = 0;
-    for (size_t i = 0; i < num_fields; ++i)
-    {
-        size_t sub = ute_read_field(&fields[i], in_buf + read, in_buf_size - read, ((void **)out_data)[i]);
-        if (sub == ERR)
-            return ERR;
-        read += sub;
     }
     return read;
 }
