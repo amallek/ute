@@ -40,6 +40,12 @@ int main(int argc, char **argv)
         void *top_data[1] = {devices_list};
         uint8_t buf[256];
         size_t written = ute_serialize(top_data, loaded_schema.versions[0].fields, buf, sizeof(buf));
+        if (written == UTE_BUF_ERROR)
+        {
+            fprintf(stderr, "Serialization failed due to buffer size\n");
+            FreeSchema(&loaded_schema);
+            return 3;
+        }
         FILE *fout = fopen(filename, "wb");
         if (!fout)
         {
@@ -75,6 +81,12 @@ int main(int argc, char **argv)
                 out_devices_list[1 + i] = &out_devices[i];
             void *out_top_data[1] = {out_devices_list};
             size_t read = ute_deserialize(buf2, n, loaded_schema.versions[0].fields, out_top_data);
+            if (read == UTE_BUF_ERROR)
+            {
+                fprintf(stderr, "Deserialization failed due to buffer size\n");
+                FreeSchema(&loaded_schema);
+                return 4;
+            }
             size_t out_count = (size_t)(uintptr_t)out_devices_list[0];
             printf("[crosslang] Read %zu bytes from %s, got %zu devices:\n", read, filename, out_count);
             for (size_t i = 0; i < out_count; ++i)
