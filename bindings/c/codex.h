@@ -4,6 +4,11 @@
 #include <stddef.h>
 #include <stdint.h>
 
+// Returned when serialization or deserialization fails due to insufficient
+// buffer space. Since size_t is unsigned, this uses the maximum value as an
+// error sentinel.
+#define UTE_BUF_ERROR ((size_t)-1)
+
 #ifdef __cplusplus
 extern "C"
 {
