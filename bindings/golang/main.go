@@ -9,6 +9,8 @@ import (
 )
 
 // main demonstrates loading a schema, serializing a map, and deserializing it back using the codex package.
+//
+// Loads the schema, serializes a sample device list, prints the binary, then deserializes and prints the result.
 func main() {
 	schemaPath := "../../schemas/complex.yaml"
 	allVersions, err := schema.LoadSchema(schemaPath)

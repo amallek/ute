@@ -39,6 +39,6 @@ You can swap the order to test both directions (C→Go and Go→C).
 
 ## See Also
 
-- [../README.md](../README.md) — Project overview and protocol details
-- [c/README.md](./c/README.md) — C binding usage
-- [golang/README.md](./golang/README.md) — Go binding usage
+- [README.md](../README.md) — Project overview and protocol details
+- [README.md](./c/README.md) — C binding usage
+- [README.md](./golang/README.md) — Go binding usage

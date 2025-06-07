@@ -1,4 +1,3 @@
-// crosslang_test.c: C <-> Go UTE interoperability test
 #include "../codex.h"
 #include "../schema.h"
 #include <stdio.h>
@@ -25,7 +24,6 @@ int main(int argc, char **argv)
 
     if (strcmp(mode, "write") == 0)
     {
-        // --- C -> Go: Serialize in C, output to file ---
         struct
         {
             uint64_t id;
@@ -59,7 +57,6 @@ int main(int argc, char **argv)
     }
     else if (strcmp(mode, "read") == 0)
     {
-        // --- Go -> C: Read file produced by Go, decode in C ---
         FILE *fin = fopen(filename, "rb");
         if (!fin)
         {

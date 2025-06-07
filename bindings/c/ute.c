@@ -1,11 +1,22 @@
+
 #include "codex.h"
 #include "schema.h"
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+
+// Example device struct for serialization/deserialization
+struct device
+{
+    uint64_t id;
+    char name[32];
+};
+
+// Function prototypes
+static void print_devices(const struct device *devices, size_t count, const char *label);
+
 int main(void)
 {
-    // (Duplicate block removed)
     // Load schema from YAML file
     struct ute_schema loaded_schema = {0};
     if (ParseSchema("../../schemas/complex.yaml", &loaded_schema) != 0)
@@ -15,25 +26,19 @@ int main(void)
     }
 
     // Example data for complex.yaml: list of devices
-    struct
-    {
-        uint64_t id;
-        char name[32];
-    } devices[2] = {
+    struct device devices[2] = {
         {1, "device1"},
         {2, "device2"}};
+    size_t device_count = 2;
 
     // Prepare data for serialization: devices as a packed array [count, ptr, ptr, ...]
-    size_t device_count = 2;
     void *devices_list[1 + 2];
     devices_list[0] = (void *)(uintptr_t)device_count; // store count as value, not pointer
     for (size_t i = 0; i < device_count; ++i)
         devices_list[1 + i] = &devices[i];
 
 #ifdef UTE_DEBUG
-    printf("Before serialization:\n");
-    for (size_t i = 0; i < device_count; ++i)
-        printf("  Device %zu: id=%llu, name=%s, addr=%p\n", i + 1, (unsigned long long)devices[i].id, devices[i].name, (void *)&devices[i]);
+    print_devices(devices, device_count, "Before serialization");
 #endif
 
     // Top-level data: array of pointers to top-level fields (here: only "devices")
@@ -54,11 +59,7 @@ int main(void)
     printf("\n");
 
     // Prepare output for deserialization
-    struct
-    {
-        uint64_t id;
-        char name[32];
-    } out_devices[2];
+    struct device out_devices[2];
     void *out_devices_list[1 + 2];
     out_devices_list[0] = 0; // count as value, will be set by ute_deserialize
     for (size_t i = 0; i < 2; ++i)
@@ -77,10 +78,16 @@ int main(void)
     size_t read = ute_deserialize(buf, written, loaded_schema.versions[0].fields, out_top_data);
     size_t out_count = (size_t)(uintptr_t)out_devices_list[0];
     printf("Deserialized %zu bytes, got %zu devices:\n", read, out_count);
-    printf("After deserialization:\n");
-    for (size_t i = 0; i < out_count; ++i)
-        printf("  Device %zu: id=%llu, name=%s, addr=%p\n", i + 1, (unsigned long long)out_devices[i].id, out_devices[i].name, (void *)&out_devices[i]);
+    print_devices(out_devices, out_count, "After deserialization");
 
     FreeSchema(&loaded_schema);
     return 0;
+}
+
+// Print a list of devices with a label
+static void print_devices(const struct device *devices, size_t count, const char *label)
+{
+    printf("%s:\n", label);
+    for (size_t i = 0; i < count; ++i)
+        printf("  Device %zu: id=%llu, name=%s, addr=%p\n", i + 1, (unsigned long long)devices[i].id, devices[i].name, (const void *)&devices[i]);
 }

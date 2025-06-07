@@ -1,9 +1,16 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stddef.h>
+#include <stdio.h>
+#include <string.h>
+#include <yaml.h>
 #include "schema.h"
+
+// =====================
+// Internal Helpers
+// =====================
+
 // Recursively free ute_field (and children)
-// Must include schema.h before this definition so struct ute_field is visible
 static void free_field(struct ute_field *field)
 {
     if (!field)
@@ -23,37 +30,37 @@ static void free_field(struct ute_field *field)
     }
 }
 
-void FreeSchema(struct ute_schema *schema)
+// Helper: duplicate string
+static char *ute_strdup(const char *s)
 {
-    if (!schema || !schema->versions)
-        return;
-    for (size_t i = 0; i < schema->num_versions; ++i)
-    {
-        struct ute_schema_version *ver = (struct ute_schema_version *)&schema->versions[i];
-        if (ver->fields)
-        {
-            for (size_t j = 0; j < ver->num_fields; ++j)
-                free_field((struct ute_field *)&ver->fields[j]);
-            free((void *)ver->fields);
-        }
-    }
-    free((void *)schema->versions);
-    schema->versions = NULL;
-    schema->num_versions = 0;
+    size_t len = strlen(s) + 1;
+    char *out = malloc(len);
+    memcpy(out, s, len);
+    return out;
 }
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <yaml.h>
-#include "schema.h"
+// Helper: get value for a key in a YAML mapping node
+static yaml_node_t *get_mapping_value(yaml_document_t *doc, yaml_node_t *map, const char *key)
+{
+    for (yaml_node_pair_t *pair = map->data.mapping.pairs.start;
+         pair < map->data.mapping.pairs.top; ++pair)
+    {
+        yaml_node_t *k = yaml_document_get_node(doc, pair->key);
+        yaml_node_t *v = yaml_document_get_node(doc, pair->value);
+        if (k->type == YAML_SCALAR_NODE && strcmp((char *)k->data.scalar.value, key) == 0)
+        {
+            return v;
+        }
+    }
+    return NULL;
+}
 
-// Forward declaration for helper
-static yaml_node_t *get_mapping_value(yaml_document_t *doc, yaml_node_t *map, const char *key);
+// =====================
+// Schema Parsing API
+// =====================
 
 int ParseSchema(const char *filename, struct ute_schema *out_schema)
 {
-
     if (!filename || !out_schema)
     {
 #ifdef UTE_DEBUG
@@ -189,38 +196,8 @@ int ParseSchema(const char *filename, struct ute_schema *out_schema)
     return 0;
 }
 
-// Forward declarations for helpers
-static yaml_node_t *get_mapping_value(yaml_document_t *doc, yaml_node_t *map, const char *key);
-int ParseSchemaField(yaml_document_t *doc, yaml_node_t *node, struct ute_field *out_field);
-
-// Helper: duplicate string
-static char *ute_strdup(const char *s)
-{
-    size_t len = strlen(s) + 1;
-    char *out = malloc(len);
-    memcpy(out, s, len);
-    return out;
-}
-
-// Helper: get value for a key in a YAML mapping node
-static yaml_node_t *get_mapping_value(yaml_document_t *doc, yaml_node_t *map, const char *key)
-{
-    for (yaml_node_pair_t *pair = map->data.mapping.pairs.start;
-         pair < map->data.mapping.pairs.top; ++pair)
-    {
-        yaml_node_t *k = yaml_document_get_node(doc, pair->key);
-        yaml_node_t *v = yaml_document_get_node(doc, pair->value);
-        if (k->type == YAML_SCALAR_NODE && strcmp((char *)k->data.scalar.value, key) == 0)
-        {
-            return v;
-        }
-    }
-    return NULL;
-}
-
 int ParseSchemaField(yaml_document_t *doc, yaml_node_t *node, struct ute_field *out_field)
 {
-
     if (!doc || !node || !out_field)
     {
 #ifdef UTE_DEBUG
@@ -321,4 +298,23 @@ int ParseSchemaField(yaml_document_t *doc, yaml_node_t *node, struct ute_field *
         }
     }
     return 0;
+}
+
+void FreeSchema(struct ute_schema *schema)
+{
+    if (!schema || !schema->versions)
+        return;
+    for (size_t i = 0; i < schema->num_versions; ++i)
+    {
+        struct ute_schema_version *ver = (struct ute_schema_version *)&schema->versions[i];
+        if (ver->fields)
+        {
+            for (size_t j = 0; j < ver->num_fields; ++j)
+                free_field((struct ute_field *)&ver->fields[j]);
+            free((void *)ver->fields);
+        }
+    }
+    free((void *)schema->versions);
+    schema->versions = NULL;
+    schema->num_versions = 0;
 }

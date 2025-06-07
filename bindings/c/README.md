@@ -103,5 +103,5 @@ See `ute.c` for a more complete, schema-driven example using dynamic YAML loadin
 
 ## License & Distribution
 
-See [../../LICENSE](../../LICENSE) for license details (MIT License).
-See [../../CONTRIBUTING.md](../../CONTRIBUTING.md) for contribution and distribution guidelines.
+See [LICENSE](../../LICENSE) for license details (MIT License).
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) for contribution and distribution guidelines.

@@ -1,4 +1,9 @@
-// crosslang_test.go: Go <-> C UTE interoperability test
+// Usage:
+//   go run test.go <read|write> <filename>
+//
+//   write:  Serialize Go data and write UTE binary to file (for C to read)
+//   read:   Read UTE binary from file (produced by C) and deserialize in Go
+
 package main
 
 import (
@@ -10,6 +15,8 @@ import (
 	"github.com/amallek/ute/bindings/golang/schema"
 )
 
+// main is the entry point for the cross-language UTE test. It parses arguments, loads the schema,
+// and either serializes Go data to a file (write) or deserializes a file produced by C (read).
 func main() {
 	if len(os.Args) != 3 {
 		fmt.Fprintf(os.Stderr, "Usage: %s <read|write> <filename>\n", os.Args[0])
@@ -33,7 +40,6 @@ func main() {
 	}
 
 	if mode == "write" {
-		// --- Go -> C: Serialize in Go, output to file ---
 		input := map[string]any{
 			"devices": []any{
 				map[string]any{"id": uint64(1), "name": "device1"},
@@ -51,7 +57,6 @@ func main() {
 		}
 		fmt.Printf("[crosslang] Wrote %d bytes to %s\n", len(binaryData), filename)
 	} else if mode == "read" {
-		// --- C -> Go: Read file produced by C, decode in Go ---
 		bin2, err := os.ReadFile(filename)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "[crosslang] %s not found. Please run C test first.\n", filename)

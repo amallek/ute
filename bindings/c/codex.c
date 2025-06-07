@@ -24,48 +24,21 @@
             return ERR;                \
     } while (0)
 
-// =====================
-// Internal helpers
-// =====================
+// =========================================================
+// Ultra Tiny Encoding (UTE) - Serialization/Deserialization
+// =========================================================
 
-// Helper: encode varint (returns bytes written)
-static size_t ute_encode_varint(uint64_t n, uint8_t *out)
-{
-    size_t i = 0;
-    while (n >= 0x80)
-    {
-        out[i++] = (uint8_t)(n | 0x80);
-        n >>= 7;
-    }
-    out[i++] = (uint8_t)n;
-    return i;
-}
-
-// Helper: decode varint (returns bytes read)
-static size_t ute_decode_varint(const uint8_t *in, size_t in_size, uint64_t *out)
-{
-    size_t i = 0;
-    uint64_t result = 0;
-    int shift = 0;
-    while (i < in_size)
-    {
-        uint8_t b = in[i++];
-        result |= (uint64_t)(b & 0x7F) << shift;
-        if (!(b & 0x80))
-            break;
-        shift += 7;
-    }
-    *out = result;
-    return i;
-}
-
-// =====================
-// Serialization
-// =====================
-
-// Helper: write a field value to buffer (recursive for struct/list)
+// Internal helpers (static)
+static size_t ute_encode_varint(uint64_t n, uint8_t *out);
+static size_t ute_decode_varint(const uint8_t *in, size_t in_size, uint64_t *out);
 static size_t ute_write_field(const struct ute_field *field, const void *value, uint8_t *out, size_t out_size);
+static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, size_t in_size, void *value);
 
+// -------------------------
+// Public API
+// -------------------------
+
+// Serialize data according to schema
 size_t ute_serialize(const void *data, const void *schema, uint8_t *out_buf, size_t out_buf_size)
 {
     // data: pointer to array of pointers (one per top-level field)
@@ -83,6 +56,59 @@ size_t ute_serialize(const void *data, const void *schema, uint8_t *out_buf, siz
     return written;
 }
 
+// Deserialize data according to schema
+size_t ute_deserialize(const uint8_t *in_buf, size_t in_buf_size, const void *schema, void *out_data)
+{
+    // schema: pointer to ute_field array (top-level fields)
+    const struct ute_field *fields = (const struct ute_field *)schema;
+    size_t num_fields = 1; // for demo, only one top-level field ("devices")
+    size_t read = 0;
+    for (size_t i = 0; i < num_fields; ++i)
+    {
+        size_t sub = ute_read_field(&fields[i], in_buf + read, in_buf_size - read, ((void **)out_data)[i]);
+        if (sub == ERR)
+            return ERR;
+        read += sub;
+    }
+    return read;
+}
+
+// -------------------------
+// Internal helpers (static)
+// -------------------------
+
+// Encode varint (returns bytes written)
+static size_t ute_encode_varint(uint64_t n, uint8_t *out)
+{
+    size_t i = 0;
+    while (n >= 0x80)
+    {
+        out[i++] = (uint8_t)(n | 0x80);
+        n >>= 7;
+    }
+    out[i++] = (uint8_t)n;
+    return i;
+}
+
+// Decode varint (returns bytes read)
+static size_t ute_decode_varint(const uint8_t *in, size_t in_size, uint64_t *out)
+{
+    size_t i = 0;
+    uint64_t result = 0;
+    int shift = 0;
+    while (i < in_size)
+    {
+        uint8_t b = in[i++];
+        result |= (uint64_t)(b & 0x7F) << shift;
+        if (!(b & 0x80))
+            break;
+        shift += 7;
+    }
+    *out = result;
+    return i;
+}
+
+// Write a field value to buffer (recursive for struct/list)
 static size_t ute_write_field(const struct ute_field *field, const void *value, uint8_t *out, size_t out_size)
 {
     size_t written = 0;
@@ -208,29 +234,7 @@ static size_t ute_write_field(const struct ute_field *field, const void *value, 
     return written;
 }
 
-// =====================
-// Deserialization
-// =====================
-
-// Helper: read a field value from buffer (recursive for struct/list)
-static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, size_t in_size, void *value);
-
-size_t ute_deserialize(const uint8_t *in_buf, size_t in_buf_size, const void *schema, void *out_data)
-{
-    // schema: pointer to ute_field array (top-level fields)
-    const struct ute_field *fields = (const struct ute_field *)schema;
-    size_t num_fields = 1; // for demo, only one top-level field ("devices")
-    size_t read = 0;
-    for (size_t i = 0; i < num_fields; ++i)
-    {
-        size_t sub = ute_read_field(&fields[i], in_buf + read, in_buf_size - read, ((void **)out_data)[i]);
-        if (sub == ERR)
-            return ERR;
-        read += sub;
-    }
-    return read;
-}
-
+// Read a field value from buffer (recursive for struct/list)
 static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, size_t in_size, void *value)
 {
     size_t read = 0;

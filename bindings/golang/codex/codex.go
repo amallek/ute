@@ -10,6 +10,8 @@ import (
 )
 
 // encodeVarint writes a uint64 as a variable-length integer to the given buffer.
+//
+// Used internally for UTE serialization.
 func encodeVarint(buf *bytes.Buffer, n uint64) {
 	for n >= 0x80 {
 		buf.WriteByte(byte(n) | 0x80)
@@ -19,6 +21,8 @@ func encodeVarint(buf *bytes.Buffer, n uint64) {
 }
 
 // decodeVarint reads a variable-length integer from the given bytes.Reader and returns it as uint64.
+//
+// Used internally for UTE deserialization.
 func decodeVarint(r *bytes.Reader) (uint64, error) {
 	var result uint64
 	var shift uint
@@ -37,6 +41,8 @@ func decodeVarint(r *bytes.Reader) (uint64, error) {
 }
 
 // Serialize encodes a map[string]any according to the provided schema and returns the serialized bytes.
+//
+// Takes a data map and a parsed schema, and returns a UTE-encoded byte slice or an error.
 func Serialize(data map[string]any, schema []types.ParsedField) ([]byte, error) {
 	buf := new(bytes.Buffer)
 	for _, field := range schema {
@@ -84,6 +90,8 @@ func Serialize(data map[string]any, schema []types.ParsedField) ([]byte, error) 
 }
 
 // Deserialize decodes bytes from the given reader according to the provided schema and returns a map[string]any.
+//
+// Takes a bytes.Reader and a parsed schema, and returns a map of field names to values or an error.
 func Deserialize(r *bytes.Reader, schema []types.ParsedField) (map[string]any, error) {
 	out := make(map[string]any)
 	for _, field := range schema {

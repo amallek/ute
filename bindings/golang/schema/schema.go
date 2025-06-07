@@ -9,6 +9,8 @@ import (
 )
 
 // ParseSchemaField recursively parses a SchemaField and returns a ParsedField with resolved types and nested fields.
+//
+// Takes a SchemaField (from YAML) and returns a ParsedField with Go-native types and nested structure.
 func ParseSchemaField(sf types.SchemaField) (types.ParsedField, error) {
 	var ft types.FieldType
 	switch sf.Type {
@@ -47,7 +49,9 @@ func ParseSchemaField(sf types.SchemaField) (types.ParsedField, error) {
 	return pf, nil
 }
 
-// LoadSchema loads a schema file and returns all available versions.
+// LoadSchema loads a schema YAML file and returns all available schema versions.
+//
+// Supports both multi-version and single-version schema files.
 func LoadSchema(filename string) ([]types.SchemaVersion, error) {
 	data, err := os.ReadFile(filename)
 	if err != nil {
@@ -68,6 +72,8 @@ func LoadSchema(filename string) ([]types.SchemaVersion, error) {
 }
 
 // FindSchemaVersion returns the SchemaVersion for a given version number.
+//
+// Returns an error if the version is not found.
 func FindSchemaVersion(versions []types.SchemaVersion, version int) (*types.SchemaVersion, error) {
 	for _, v := range versions {
 		if v.Version == version {
@@ -77,7 +83,9 @@ func FindSchemaVersion(versions []types.SchemaVersion, version int) (*types.Sche
 	return nil, fmt.Errorf("schema version %d not found", version)
 }
 
-// ParseSchemaFields parses a list of SchemaField into ParsedField.
+// ParseSchemaFields parses a list of SchemaField into a slice of ParsedField.
+//
+// Returns a slice of ParsedField or an error if any field fails to parse.
 func ParseSchemaFields(fields []types.SchemaField) ([]types.ParsedField, error) {
 	var parsed []types.ParsedField
 	for _, f := range fields {

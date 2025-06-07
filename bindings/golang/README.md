@@ -81,5 +81,5 @@ This directory contains the Go implementation and CLI for the Ultra Tiny Encodin
 
 ## Contributing & License
 
-See [../../CONTRIBUTING.md](../../CONTRIBUTING.md) for contribution and distribution guidelines.
-See [../../LICENSE](../../LICENSE) for license details (GPL3).
+See [CONTRIBUTING.md](../../CONTRIBUTING.md) for contribution and distribution guidelines.
+See [LICENSE](../../LICENSE) for license details (GPL3).

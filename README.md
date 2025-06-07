@@ -67,7 +67,7 @@ See the `bindings/` directory for language-specific usage and API details.
 ## Disadvantages
 
 - Not self-describing: requires schema for decoding
-- Fewer language bindings (currently Go only)
+- Fewer language bindings (currently C and Go only)
 - No built-in support for advanced types (e.g., floats, enums, maps)
 
 ## Comparison
