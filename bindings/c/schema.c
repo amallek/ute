@@ -260,7 +260,10 @@ int ParseSchemaField(yaml_document_t *doc, yaml_node_t *node, struct ute_field *
     else if (strcmp(type_str, "int") == 0)
         out_field->type = UTE_TYPE_INT;
     else if (strcmp(type_str, "string") == 0)
+    {
         out_field->type = UTE_TYPE_STRING;
+        out_field->buf_size = 32; // default fixed size for strings
+    }
     else if (strcmp(type_str, "list") == 0)
         out_field->type = UTE_TYPE_LIST;
     else if (strcmp(type_str, "struct") == 0)
@@ -315,6 +318,7 @@ int ParseSchemaField(yaml_document_t *doc, yaml_node_t *node, struct ute_field *
             else if (fields[i].type == UTE_TYPE_STRING)
             {
                 fields[i].offset = running_offset;
+                fields[i].buf_size = 32;
                 running_offset += 32; // fixed size for name[32]
             }
             // Add more types as needed

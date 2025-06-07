@@ -185,6 +185,10 @@ static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, s
             return 0;
         uint64_t len = 0;
         read += ute_decode_varint(in + read, in_size - read, &len);
+        if (field->buf_size && len >= field->buf_size)
+            return 0; // string longer than available buffer
+        if (len > in_size - read)
+            return 0; // not enough input bytes
         memcpy(value, in + read, len);
         ((char *)value)[len] = 0;
         read += len;
@@ -219,7 +223,8 @@ static size_t ute_read_field(const struct ute_field *field, const uint8_t *in, s
         read += ute_decode_varint(in + read, in_size - read, &nfields);
         for (size_t i = 0; i < nfields; ++i)
         {
-            read += ute_read_field(&field->fields[i], in + read, in_size - read, (char *)value + i * sizeof(void *));
+            read += ute_read_field(&field->fields[i], in + read, in_size - read,
+                                   (char *)value + field->fields[i].offset);
         }
         break;
     }

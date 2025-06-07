@@ -26,6 +26,7 @@ struct ute_field
     const struct ute_field *elem;   // for lists
     const struct ute_field *fields; // for structs
     size_t num_fields;
+    size_t buf_size; // capacity for string values (0 if unspecified)
     size_t offset; // offset within struct (for struct fields)
 };
 
