@@ -31,3 +31,6 @@ $(BIN): $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ)
 
 .PHONY: all clean
+
+clean:
+	rm -f $(BIN) $(OBJ)

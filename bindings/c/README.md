@@ -8,10 +8,12 @@ This directory contains a native C implementation of the UTE (Ultra Tiny Encodin
 - `schema.c`, `schema.h` — Schema parsing and versioning logic (YAML or JSON-based)
 - `ute.c` — Main example/test file for encoding/decoding
 
-## Build
-
 
 ## Build
+
+**Dependency:**
+
+- You need the [libyaml](https://pyyaml.org/wiki/LibYAML) C library installed (e.g. `brew install libyaml` on macOS, `apt install libyaml-dev` on Debian/Ubuntu, or `dnf install libyaml-devel` on Fedora).
 
 To build the main UTE C example and test program:
 
