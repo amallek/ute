@@ -67,21 +67,21 @@ See the `bindings/` directory for language-specific usage and API details.
 ## Disadvantages
 
 - Not self-describing: requires schema for decoding
-- Fewer language bindings (currently C and Go only)
+- Fewer language bindings (currently C, Go, and JS/TS only)
 - No built-in support for advanced types (e.g., floats, enums, maps)
 
 ## Comparison
 
-| Feature         | UTE         | Protobuf    | JSON        |
-|-----------------|-------------|-------------|-------------|
-| Binary format   | Yes         | Yes         | No          |
-| Schema required | Yes         | Yes         | No          |
-| Human readable  | No          | No          | Yes         |
-| Extensible      | Yes (YAML)  | Yes         | Yes         |
-| Codegen needed  | No          | Yes         | No          |
-| Type safety     | Yes         | Yes         | No          |
-| Size efficiency | High        | High        | Low         |
-| Language support| Go, C       | Many        | Many        |
+| Feature         | UTE          | Protobuf    | JSON        |
+|-----------------|--------------|-------------|-------------|
+| Binary format   | Yes          | Yes         | No          |
+| Schema required | Yes          | Yes         | No          |
+| Human readable  | No           | No          | Yes         |
+| Extensible      | Yes (YAML)   | Yes         | Yes         |
+| Codegen needed  | No           | Yes         | No          |
+| Type safety     | Yes          | Yes         | No          |
+| Size efficiency | High         | High        | Low         |
+| Language support| Go, C. JS/TS | Many        | Many        |
 
 
 

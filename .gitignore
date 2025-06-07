@@ -3,3 +3,5 @@
 **/ute
 **/*.ute
 **/*.o
+**/node_modules
+**/bindings/ts/dist
