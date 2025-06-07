@@ -81,7 +81,7 @@ See the `bindings/` directory for language-specific usage and API details.
 | Codegen needed  | No           | Yes         | No          |
 | Type safety     | Yes          | Yes         | No          |
 | Size efficiency | High         | High        | Low         |
-| Language support| Go, C. JS/TS | Many        | Many        |
+| Language support| Go, C, JS/TS | Many        | Many        |
 
 
 
