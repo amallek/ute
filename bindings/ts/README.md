@@ -21,19 +21,19 @@ npm install utep
 ## Usage
 
 ```ts
-import { loadSchemaFromFile, serialize, deserialize } from 'utep';
+import UTEP from 'utep';
 
 // Load schema (YAML file, versioned)
-const schema = loadSchemaFromFile('path/to/schema.yaml')[0].fields;
+const schema = UTEP.loadSchemaFromFile('path/to/schema.yaml')[0].fields;
 
 // Data to encode
 const data = { devices: [ { id: 1, name: 'device1' } ] };
 
 // Serialize to UTE binary
-const encoded = serialize(data, schema);
+const encoded = UTEP.serialize(data, schema);
 
 // Deserialize from UTE binary
-const [decoded] = deserialize(encoded, schema);
+const [decoded] = UTEP.deserialize(encoded, schema);
 console.log(decoded);
 ```
 
