@@ -6,6 +6,7 @@ This directory contains language-specific bindings for the Ultra Tiny Encoding (
 
 - `c/` — Native C binding for UTE
 - `golang/` — Go binding for UTE
+- `ts/` — JS/TS binding for UTE
 
 Each binding contains:
 - Implementation source code
@@ -17,7 +18,7 @@ The `test/` folder in each binding contains a program (`crosslang_test` or `test
 
 - **Serialize** a sample data structure to a file (e.g., `out.ute`) using the binding's implementation.
 - **Deserialize** a file produced by the other language's binding, verifying that the data round-trips correctly.
-- Use a shared schema (see `../../schemas/complex.yaml`) to ensure both bindings interpret the data identically.
+- Use a shared schema (see `schemas/complex.yaml`) to ensure both bindings interpret the data identically.
 
 ### How to Use
 
@@ -42,3 +43,4 @@ You can swap the order to test both directions (C→Go and Go→C).
 - [README.md](../README.md) — Project overview and protocol details
 - [README.md](./c/README.md) — C binding usage
 - [README.md](./golang/README.md) — Go binding usage
+- [README.md](./ts/README.md) — JS/TS binding usage
