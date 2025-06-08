@@ -53,7 +53,11 @@ export function serialize(data: any, schema: UteSchemaField[]): Uint8Array {
                 out.push(T_LIST);
                 out.push(...encodeVarint(v.length));
                 for (const item of v) {
-                    out.push(...serialize({ '': item }, [field.elem!]));
+                    if (field.elem!.type === 'struct') {
+                        out.push(...serialize(item, field.elem!.fields!));
+                    } else {
+                        out.push(...serialize({ '': item }, [field.elem!]));
+                    }
                 }
                 break;
             case 'struct':
@@ -96,9 +100,15 @@ export function deserialize(buf: Uint8Array, schema: UteSchemaField[], offset = 
                 i += n;
                 const arr = [];
                 for (let j = 0; j < count; ++j) {
-                    const [item, used] = deserialize(buf, [field.elem!], i);
-                    arr.push(item['']);
-                    i += used;
+                    if (field.elem!.type === 'struct') {
+                        const [item, used] = deserialize(buf, field.elem!.fields!, i);
+                        arr.push(item);
+                        i += used;
+                    } else {
+                        const [item, used] = deserialize(buf, [field.elem!], i);
+                        arr.push(item['']);
+                        i += used;
+                    }
                 }
                 out[field.name] = arr;
                 break;

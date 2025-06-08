@@ -15,8 +15,9 @@ Schema-driven, compact binary serialization for Node.js and TypeScript. Compatib
 ## Installation
 
 ```sh
-npm install utep
+npm i utep
 ```
+
 
 ## Usage
 
@@ -25,6 +26,7 @@ import UTEP from 'utep';
 
 // Load schema (YAML file, versioned)
 const schema = UTEP.loadSchemaFromFile('path/to/schema.yaml')[0].fields;
+// const schema = UTEP.loadSchemaFromString('#schema#')[0].fields;
 
 // Data to encode
 const data = { devices: [ { id: 1, name: 'device1' } ] };
@@ -37,6 +39,23 @@ const [decoded] = UTEP.deserialize(encoded, schema);
 console.log(decoded);
 ```
 
+## Example Schema
+
+```yaml
+versions:
+  - version: 1
+    fields:
+      - name: devices
+        type: list
+        elem:
+          type: struct
+          fields:
+            - name: id
+              type: int
+            - name: name
+              type: string
+```
+
 See [`test/test.ts`](./test/test.ts) for a more complete example.
 
 ## API
@@ -46,6 +65,3 @@ See [`test/test.ts`](./test/test.ts) for a more complete example.
 - `deserialize(buf: Uint8Array, schema: UteSchemaField[], offset = 0): [any, number]` — Deserialize UTE binary to JS object
 
 TypeScript types for schema and data are included.
-
-## License
-See [LICENSE](../../LICENSE)
