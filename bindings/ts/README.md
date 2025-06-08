@@ -48,4 +48,4 @@ See [`test/test.ts`](./test/test.ts) for a more complete example.
 TypeScript types for schema and data are included.
 
 ## License
-See[LICENSE](../../LICENSE)
+See [LICENSE](../../LICENSE)
